@@ -136,16 +136,21 @@ public class SaxEventToXmlElementConverter {
           /*
            * Get the first non-empty prefix that is associated with the URI (the other, non-default prefix)
            */
-          String altNS =
+          NamespaceMapping altNSMap =
               namespaceStack
                   .stream()
                   .filter(p -> attUri.equals(p.getUri()) && !(p.getPrefix().isEmpty()))
                   .findFirst()
-                  .get()
-                  .getPrefix();
-          out.writeNamespace(altNS, attUri);
-          addedNamespaces.put(attUri, altNS);
-          out.writeAttribute(altNS, attUri, atts.getLocalName(i), atts.getValue(i));
+                  .orElse(null);
+
+          if (altNSMap != null) {
+            String altNS = altNSMap.getPrefix();
+            out.writeNamespace(altNS, attUri);
+            addedNamespaces.put(attUri, altNS);
+            out.writeAttribute(altNS, attUri, atts.getLocalName(i), atts.getValue(i));
+          } else {
+            LOGGER.debug("No prefix matching {}", attUri);
+          }
         }
       }
     }
