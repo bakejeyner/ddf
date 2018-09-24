@@ -175,4 +175,16 @@ public interface ClientFactoryFactory {
    */
   <T> SecureCxfClientFactory<T> getSecureCxfClientFactory(
       String endpointUrl, Class<T> interfaceClass);
+
+  /**
+   * Returns an initialized SecureCxfClientFactory
+   *
+   * @param endpointUrl
+   * @param interfaceClass
+   * @param providers
+   * @param <T>
+   * @return
+   */
+  <T> SecureCxfClientFactory<T> getSecureCxfClientFactory(
+      String endpointUrl, Class<T> interfaceClass, List<?> providers);
 }

@@ -151,6 +151,11 @@ public class SecureCxfClientFactoryImpl<T> implements SecureCxfClientFactory<T> 
   }
 
   public SecureCxfClientFactoryImpl(
+      String endpointUrl, Class<T> interfaceClass, List<?> providers) {
+    this(endpointUrl, interfaceClass, providers, null, false, false);
+  }
+
+  public SecureCxfClientFactoryImpl(
       String endpointUrl, Class<T> interfaceClass, String username, String password) {
     this(endpointUrl, interfaceClass, null, null, false, false, null, null, username, password);
   }

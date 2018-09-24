@@ -135,4 +135,10 @@ public class ClientFactoryFactoryImpl implements ClientFactoryFactory {
       String endpointUrl, Class<T> interfaceClass) {
     return new SecureCxfClientFactoryImpl<>(endpointUrl, interfaceClass);
   }
+
+  @Override
+  public <T> SecureCxfClientFactory<T> getSecureCxfClientFactory(
+      String endpointUrl, Class<T> interfaceClass, List<?> providers) {
+    return new SecureCxfClientFactoryImpl<>(endpointUrl, interfaceClass, providers);
+  }
 }
