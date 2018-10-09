@@ -25,7 +25,7 @@
     <name>DDF :: Catalog :: OpenSearch :: Endpoint</name>
     <packaging>bundle</packaging>
     <properties>
-        <parboiled.version>1.1.8</parboiled.version>
+        <parboiled.version>1.2.0</parboiled.version>
     </properties>
     <dependencies>
         <dependency>
@@ -58,12 +58,6 @@
             <artifactId>catalog-opensearch-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <!-- Overriding the version from the root pom due to dependency conflicts with parboiled-java -->
-            <version>6.0</version>
-        </dependency>
         <!--test dependencies-->
         <dependency>
             <groupId>ddf.catalog.core</groupId>
@@ -85,6 +79,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            <!-- Need to import the version that Karaf is exporting -->
+                            org.objectweb.asm;version="[6.0,7.0)",
+                            *
+                        </Import-Package>
                         <Embed-Dependency>
                             catalog-core-api-impl,
                             catalog-opensearch-api,
