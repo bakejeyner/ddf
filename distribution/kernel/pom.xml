@@ -142,35 +142,35 @@
                                     <groupId>org.bouncycastle</groupId>
                                     <artifactId>bcprov-jdk15on</artifactId>
                                     <version>${bouncy.version}</version>
-                                    <outputDirectory>${setup.folder}/ext</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                     <destFileName>bcprov-${bouncy.version}.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.bouncycastle</groupId>
                                     <artifactId>bcmail-jdk15on</artifactId>
                                     <version>${bouncy.version}</version>
-                                    <outputDirectory>${setup.folder}/ext</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                     <destFileName>bcmail-${bouncy.version}.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.bouncycastle</groupId>
                                     <artifactId>bcpkix-jdk15on</artifactId>
                                     <version>${bouncy.version}</version>
-                                    <outputDirectory>${setup.folder}/ext</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                     <destFileName>bcpkix-${bouncy.version}.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.codice.pro-grade</groupId>
                                     <artifactId>pro-grade</artifactId>
                                     <version>${pro-grade.version}</version>
-                                    <outputDirectory>${setup.folder}/ext</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                     <destFileName>pro-grade-${pro-grade.version}.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>javax.annotation</groupId>
                                     <artifactId>javax.annotation-api</artifactId>
                                     <version>${javax.annotation-api.version}</version>
-                                    <outputDirectory>${setup.folder}/ext</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                     <destFileName>
                                         javax.annotation-api-${javax.annotation-api.version}.jar
                                     </destFileName>
@@ -223,15 +223,7 @@
                                     <groupId>org.apache.servicemix.bundles</groupId>
                                     <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
                                     <version>${xerces.bundle.version}</version>
-                                    <outputDirectory>
-                                        ${setup.folder}/endorsed
-                                    </outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.servicemix.specs</groupId>
-                                    <artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
-                                    <version>${servicemix.specs.version}</version>
-                                    <outputDirectory>${setup.folder}/endorsed</outputDirectory>
+                                    <outputDirectory>${setup.folder}/boot</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.karaf.specs</groupId>

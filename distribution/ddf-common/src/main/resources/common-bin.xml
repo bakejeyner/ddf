@@ -177,11 +177,6 @@
         </fileSet>
 
         <fileSet>
-            <directory>${setup.folder}/ext</directory>
-            <outputDirectory>/lib/ext</outputDirectory>
-        </fileSet>
-
-        <fileSet>
             <directory>${setup.folder}/lib</directory>
             <outputDirectory>/lib</outputDirectory>
         </fileSet>
