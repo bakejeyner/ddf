@@ -29,7 +29,16 @@
         <feature version="${karaf.version}">eventadmin</feature>
         <feature version="${karaf.version}">jasypt-encryption</feature>
         <feature version="${karaf.version}">http</feature>
+        <feature>javaee</feature>
         <feature>sync-installer</feature>
+    </feature>
+
+    <feature name="javaee" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
+        <bundle start-level="40">wrap:mvn:javax.jws/javax.jws-api/1.1</bundle>
+        <bundle start-level="40">wrap:mvn:javax.xml.bind/jaxb-api/2.3.1</bundle>
+        <bundle start-level="40">mvn:javax.xml.soap/javax.xml.soap-api/1.4.0</bundle>
+        <bundle start-level="40">wrap:mvn:javax.xml.ws/jaxws-api/2.3.1</bundle>
     </feature>
 
     <feature name="sync-installer" version="${project.version}">
