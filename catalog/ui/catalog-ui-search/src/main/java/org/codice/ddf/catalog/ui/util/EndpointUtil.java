@@ -19,6 +19,8 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ddf.action.ActionRegistry;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.Attribute;
@@ -76,10 +78,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.boon.json.JsonFactory;
-import org.boon.json.JsonParserFactory;
-import org.boon.json.JsonSerializerFactory;
-import org.boon.json.ObjectMapper;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.metacard.EntityTooLargeException;
 import org.codice.ddf.catalog.ui.query.cql.CqlQueryResponse;
@@ -133,9 +131,7 @@ public class EndpointUtil {
 
   private final Random random = new Random();
 
-  private ObjectMapper objectMapper =
-      JsonFactory.create(
-          new JsonParserFactory(), new JsonSerializerFactory().includeNulls().includeEmpty());
+  private static final Gson GSON = new GsonBuilder().create();
 
   public EndpointUtil(
       List<MetacardType> metacardTypes,
@@ -468,7 +464,7 @@ public class EndpointUtil {
   }
 
   public String getJson(Object result) {
-    return objectMapper.toJson(result);
+    return GSON.toJson(result, String.class);
   }
 
   public CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)

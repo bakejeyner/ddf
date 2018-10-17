@@ -313,7 +313,7 @@ public class ConfluenceSourceTest {
   }
 
   @Test
-  public void testIsAvailable() throws Exception {
+  public void testIsAvailable() {
     WebClient mockClient = mock(WebClient.class);
     when(factory.getWebClient()).thenReturn(mockClient);
     Response mockResponse = mock(Response.class);
@@ -323,7 +323,7 @@ public class ConfluenceSourceTest {
   }
 
   @Test
-  public void testCachedAvailable() throws Exception {
+  public void testCachedAvailable() {
     WebClient mockClient = mock(WebClient.class);
     when(factory.getWebClient()).thenReturn(mockClient);
     Response mockResponse = mock(Response.class);
@@ -356,7 +356,7 @@ public class ConfluenceSourceTest {
   }
 
   @Test
-  public void testAvailibilityConnectionException() throws Exception {
+  public void testAvailibilityConnectionException() {
     WebClient mockClient = mock(WebClient.class);
     when(factory.getWebClient()).thenReturn(mockClient);
     when(mockClient.head()).thenThrow(new RuntimeException("Connection exception"));
@@ -393,7 +393,7 @@ public class ConfluenceSourceTest {
   }
 
   @Test
-  public void testInitNoEndpointUrl() throws Exception {
+  public void testInitNoEndpointUrl() {
     ConfluenceSource source =
         new ConfluenceSource(
             adapter, encryptionService, transformer, reader, registry, clientFactoryFactory);

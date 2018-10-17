@@ -13,6 +13,8 @@
  */
 package org.codice.ddf.confluence.source;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ddf.catalog.data.AttributeInjector;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
@@ -39,8 +41,6 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.boon.json.JsonFactory;
-import org.boon.json.ObjectMapper;
 import org.codice.ddf.confluence.common.Confluence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class ConfluenceInputTransformer implements InputTransformer {
 
   private static final int DESCRIPTION_SIZE = 256;
 
-  private static final ObjectMapper MAPPER = JsonFactory.create();
+  private Gson gson = new GsonBuilder().create();
 
   private MetacardType metacardType;
 
@@ -257,7 +257,8 @@ public class ConfluenceInputTransformer implements InputTransformer {
     String jsonString = null;
     try {
       jsonString = IOUtils.toString(stream);
-      Map<String, Object> rootObject = MAPPER.parser().parseMap(jsonString);
+
+      Map rootObject = gson.fromJson(jsonString, Map.class);
 
       LOGGER.debug(jsonString);
       return rootObject;
