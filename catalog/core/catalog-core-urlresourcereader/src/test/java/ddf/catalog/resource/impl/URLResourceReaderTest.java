@@ -178,10 +178,10 @@ public class URLResourceReaderTest {
       resourceReader.retrieveResource(uri, arguments);
     } catch (IOException e) {
       LOGGER.info("Successfully caught expected IOException");
-      fail();
+      assert (true);
     } catch (ResourceNotFoundException e) {
       LOGGER.info("Caught unexpected ResourceNotFoundException");
-      assert (true);
+      fail();
     } catch (URISyntaxException e) {
       LOGGER.info("Caught unexpected URISyntaxException");
       fail();
