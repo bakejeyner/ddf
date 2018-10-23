@@ -119,6 +119,11 @@
 
         <!-- Version properties for this repository live in this repository -->
         <org.rrd4j.version>3.3.1</org.rrd4j.version>
+
+        <!-- Command line argument properties for the maven-surefire-plugin -->
+        <jacoco.argline/> <!-- Automagically set by Jacoco -->
+        <surefire.argline.append/>
+        <surefire.argline>${surefire.argline.append} ${jacoco.argline} -Xmx1024m -Djava.awt.headless=true -noverify</surefire.argline>
         <felix.scr.version>2.0.14</felix.scr.version>
     </properties>
     <!--
@@ -271,6 +276,9 @@
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
+                            <configuration>
+                                <propertyName>jacoco.argline</propertyName>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -279,7 +287,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.20.1</version>
                     <configuration>
-                        <argLine>${argLine} -Djava.awt.headless=true -noverify</argLine>
+                        <argLine>${surefire.argline}</argLine>
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
                         <includes>
                             <include>**/*Test.java</include>
                             <include>**/*Spec.class</include>
@@ -681,6 +691,9 @@
                                     <goals>
                                         <goal>prepare-agent</goal>
                                     </goals>
+                                    <configuration>
+                                        <propertyName>jacoco.argline</propertyName>
+                                    </configuration>
                                 </execution>
                                 <execution>
                                     <id>default-report</id>

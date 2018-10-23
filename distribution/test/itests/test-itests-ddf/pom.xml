@@ -507,7 +507,8 @@
                     <includes>
                         <include>**/*Suite.java</include>
                     </includes>
-                    <argLine>${argLine} -Dddf.version=${project.version} -Djava.awt.headless=true
+                    <argLine>${surefire.argline} -Dddf.version=${project.version}
+                        -Djava.awt.headless=true
                         -noverify
                     </argLine>
                     <systemPropertyVariables>
