@@ -24,6 +24,11 @@
     <artifactId>catalog-core-solr</artifactId>
     <name>DDF :: Catalog :: Core :: Solr</name>
     <packaging>jar</packaging>
+
+    <properties>
+        <surefire.argline.append>-Dlog4j.configuration=log4j-test.properties</surefire.argline.append>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.solr</groupId>

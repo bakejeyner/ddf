@@ -30,6 +30,7 @@
     <properties>
         <!-- UPDATE VERSION EACH TIME INTERFACE CHANGES -->
         <admin.core.appservice.api.version>2.0.0</admin.core.appservice.api.version>
+        <surefire.argline.append>-Dorg.apache.logging.log4j.level=INFO</surefire.argline.append>
     </properties>
     <dependencies>
         <dependency>

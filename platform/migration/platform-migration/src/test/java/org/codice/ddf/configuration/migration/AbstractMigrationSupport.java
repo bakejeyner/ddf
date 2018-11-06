@@ -92,6 +92,14 @@ public class AbstractMigrationSupport {
 
   protected Path ddfBin;
 
+  @Before
+  public void baseSetup() throws Exception {
+    root = testFolder.getRoot().toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
+    ddfHome = testFolder.newFolder("ddf").toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
+    ddfBin = testFolder.newFolder("ddf", "bin").toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
+    System.setProperty("ddf.home", ddfHome.toString());
+  }
+
   /**
    * Retrieves all zip entries representing files from the specified zip file.
    *
@@ -342,14 +350,6 @@ public class AbstractMigrationSupport {
    */
   public Path createDirectory(String... dirs) throws IOException {
     return testFolder.newFolder((String[]) ArrayUtils.addAll(new String[] {"ddf"}, dirs)).toPath();
-  }
-
-  @Before
-  public void baseSetup() throws Exception {
-    root = testFolder.getRoot().toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
-    ddfHome = testFolder.newFolder("ddf").toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
-    ddfBin = testFolder.newFolder("ddf", "bin").toPath().toRealPath(LinkOption.NOFOLLOW_LINKS);
-    System.setProperty("ddf.home", ddfHome.toString());
   }
 
   public void initMigratableMock() {

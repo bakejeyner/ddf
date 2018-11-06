@@ -94,6 +94,14 @@ class SolrClientAdapterAsyncSpec extends Specification {
     }
   }
 
+  def setupSpec() {
+    System.setProperty("org.ops4j.pax.logging.DefaultServiceLog.level", "INFO")
+  }
+
+  def cleanupSpec() {
+    System.clearProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
+  }
+
   @Unroll
   def 'test constructor when client is created after #created_after and becomes available'() {
     given: "a client and creator to verify that failsafe actually delegates to our creator and client"
