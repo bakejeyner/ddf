@@ -53,12 +53,17 @@
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-core</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
             <artifactId>pac4j-oidc</artifactId>
             <version>3.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-core</artifactId>
+            <artifactId>pac4j-oauth</artifactId>
             <version>3.6.1</version>
         </dependency>
         <dependency>
@@ -114,6 +119,11 @@
             <groupId>ddf.action.core</groupId>
             <artifactId>action-core-impl</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-core</artifactId>
+            <version>5.6.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -174,7 +184,6 @@
                             ddf-security-common,
                             platform-util,
                             platform-util-unavailableurls,
-                            oauth2-oidc-sdk,
                             lang-tag,
                             siv-mode,
                             jbcrypt

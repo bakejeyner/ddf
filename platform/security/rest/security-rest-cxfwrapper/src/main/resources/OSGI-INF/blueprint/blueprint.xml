@@ -19,8 +19,7 @@
     </bean>
 
     <service ref="clientFactoryFactory"
-             interface="org.codice.ddf.cxf.client.ClientFactoryFactory">
-
+         interface="org.codice.ddf.cxf.client.ClientFactoryFactory">
     </service>
 
 </blueprint>

@@ -25,53 +25,38 @@
         <Option label="Generic" value="Generic"/>
     </AD>
 
-    <AD name="Client ID" id="clientId" type="String" default="ddf.client"
-        description="Unique ID for the client, this may be provided by the Identity Provider.">
-
-    </AD>
+    <AD name="Client ID" id="clientId" type="String" default="ddf-client"
+        description="Unique ID for the client, this may be provided by the Identity Provider."/>
 
     <AD name="Realm/Tenant" id="realm" type="String" default="master"
-        description="Realm to use for a multi-tenant environment. This is required for Keycloak or Azure">
-    </AD>
+        description="Realm to use for a multi-tenant environment. This is required for Keycloak or Azure"/>
 
     <AD name="Secret" id="secret" type="String" default="secret"
-      description="This value must match the value set on the Identity Provider.">
+      description="This value must match the value set on the Identity Provider."/>
 
-    </AD>
-
-    <AD name="Discovery URI" id="discoveryURI" type="String" default="http://localhost:8080/auth/realms/master/.well-known/openid-configuration"
-        description="Discovery URI for fetching OP metadata (http://openid.net/specs/openid-connect-discovery-1_0.html)">
-
-    </AD>
+    <AD name="Discovery URI" id="discoveryUri" type="String" default="http://localhost:8080/auth/realms/master/.well-known/openid-configuration"
+        description="Discovery URI for fetching OP metadata (http://openid.net/specs/openid-connect-discovery-1_0.html)"/>
 
     <AD name="Base URI" id="baseUri" type="String" default="http://localhost:8080/auth"
-        description="Base URI for IdP. Do not fill out both this and the Discovery URI. Only one is needed depending on the IdP in use.">
+        description="Base URI for IdP. Do not fill out both this and the Discovery URI. Only one is needed depending on the IdP in use."/>
 
-    </AD>
-
-    <AD name="Logout URI" id="logoutUri" type="String" default="http://localhost:8080/auth/admin/master/protocol/openid-connect/logout"
-        description="URI directing to single logout service of the IdP in use.">
-
-    </AD>
+    <AD name="Logout URI" id="logoutUri" type="String" default="http://localhost:8080/auth/realms/master/protocol/openid-connect/logout"
+        description="URI directing to single logout service of the IdP in use."/>
 
     <AD name="Scope" id="scope" type="String" default="openid profile email resource.read"
-        description="OIDC scopes">
-
-    </AD>
+        description="OIDC scopes"/>
 
     <AD name="Use Nonce" id="useNonce" type="Boolean" default="true"
-        description="Whether or not to use nonce in JWT">
+        description="Whether or not to use nonce in JWT"/>
 
-    </AD>
-
-    <AD name="Flow" id="responseType" type="String" default="id_token"
-        description="Type of flow to use.">
-        <Option label="code" value="code" />
-        <Option label="id_token" value="id_token" />
-        <Option label="id_token token" value="id_token token" />
-        <Option label="code id_token" value="code id_token" />
-        <Option label="code token" value="code token" />
-        <Option label="code id_token token" value="code id_token token" />
+    <AD name="Default Response Type" id="defaultResponseType" type="String" default="code"
+      description="Default response type to use.">
+      <Option label="code" value="code" />
+      <Option label="id_token" value="id_token" />
+      <Option label="id_token token" value="id_token token" />
+      <Option label="code id_token" value="code id_token" />
+      <Option label="code token" value="code token" />
+      <Option label="code id_token token" value="code id_token token" />
     </AD>
 
     <AD name="Mode" id="responseMode" type="String" default="form_post"

@@ -15,6 +15,9 @@ package org.codice.ddf.security.oidc.client;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import org.pac4j.oauth.client.OAuth20Client;
+import org.pac4j.oauth.config.OAuth20Configuration;
+import org.pac4j.oauth.profile.generic.GenericOAuth20ProfileDefinition;
 import org.pac4j.oidc.client.AzureAdClient;
 import org.pac4j.oidc.client.GoogleOidcClient;
 import org.pac4j.oidc.client.KeycloakOidcClient;
@@ -27,10 +30,13 @@ import org.pac4j.oidc.profile.azuread.AzureAdProfile;
 import org.pac4j.oidc.profile.creator.OidcProfileCreator;
 import org.pac4j.oidc.profile.google.GoogleOidcProfile;
 import org.pac4j.oidc.profile.keycloak.KeycloakOidcProfile;
+import org.pac4j.scribe.builder.api.GenericApi20;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HandlerConfiguration {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HandlerConfiguration.class);
+
   private static final String IDP_TYPE = "idpType";
   private static final String CLIENT_ID = "clientId";
   private static final String REALM = "realm";
@@ -39,15 +45,24 @@ public class HandlerConfiguration {
   private static final String BASE_URI = "baseUri";
   private static final String SCOPE = "scope";
   private static final String USE_NONCE = "useNonce";
-  private static final String RESPONSE_TYPE = "responseType";
+  private static final String DEFAULT_RESPONSE_TYPE = "defaultResponseType";
   private static final String RESPONSE_MODE = "responseMode";
   private static final String LOGOUT_URI = "logoutUri";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HandlerConfiguration.class);
-
-  private OidcClient oidcClient;
   private OidcConfiguration oidcConfiguration;
+  private OidcClient oidcClient;
+  private OidcProfileCreator oidcProfileCreator;
+  private OidcLogoutActionBuilder logoutActionBuilder;
 
+  private OAuth20Configuration oAuthConfiguration;
+  private OAuth20Client oAuthClient;
+
+  private String responseType;
+  private String callbackUrl;
+
+  private boolean initialized = false;
+
+  // metatype variables
   private String idpType;
   private String clientId;
   private String realm;
@@ -56,16 +71,22 @@ public class HandlerConfiguration {
   private String baseUri;
   private String scope;
   private boolean useNonce;
-  private String responseType;
+  private String defaultResponseType;
   private String responseMode;
   private String logoutUri;
 
-  private OidcLogoutActionBuilder logoutActionBuilder;
-
-  private OidcProfileCreator oidcProfileCreator;
+  public HandlerConfiguration(Map<String, Object> properties) {
+    if (!properties.isEmpty()) {
+      update(properties);
+    }
+  }
 
   public OidcClient getOidcClient() {
     return oidcClient;
+  }
+
+  public OidcConfiguration getOidcConfiguration() {
+    return oidcConfiguration;
   }
 
   public OidcLogoutActionBuilder getLogoutActionBuilder() {
@@ -76,15 +97,25 @@ public class HandlerConfiguration {
     return oidcProfileCreator;
   }
 
-  public String getLogoutUri() {
-    return logoutUri;
+  public OAuth20Client getOAuthClient() {
+    return oAuthClient;
   }
 
-  public OidcConfiguration getOidcConfiguration() {
-    return oidcConfiguration;
+  public OAuth20Configuration getOAuthConfiguration() {
+    return oAuthConfiguration;
+  }
+
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  public void setCallbackUrl(String callbackUrl) {
+    this.callbackUrl = callbackUrl;
   }
 
   public void update(Map<String, Object> properties) {
+    initialized = true;
+
     for (Entry entry : properties.entrySet()) {
       String key = (String) entry.getKey();
       Object value = entry.getValue();
@@ -114,8 +145,8 @@ public class HandlerConfiguration {
         case USE_NONCE:
           useNonce = (boolean) value;
           break;
-        case RESPONSE_TYPE:
-          responseType = (String) value;
+        case DEFAULT_RESPONSE_TYPE:
+          defaultResponseType = (String) value;
           break;
         case RESPONSE_MODE:
           responseMode = (String) value;
@@ -125,10 +156,41 @@ public class HandlerConfiguration {
           break;
       }
     }
-    generateOidcClient();
   }
 
-  private void generateOidcClient() {
+  public void configureFlow(Flow flow) {
+    if (flow == null) {
+      flow = Flow.DEFAULT;
+    }
+    configureResponseType(flow);
+  }
+
+  public void configureResponseType(Flow flow) {
+    switch (flow) {
+      case AUTHORIZATION_CODE:
+        responseType = "code";
+        break;
+      case IMPLICIT:
+        responseType = "id_token token";
+        break;
+      case CREDENTIAL:
+        responseType = "id_token token";
+        break;
+      case DEFAULT:
+        responseType = defaultResponseType;
+    }
+  }
+
+  public void generate() {
+    generateOidcConfiguration();
+    generateOidcClient();
+    generateOidcLogoutAction();
+
+    generateOAuthConfiguration();
+    generateOAuthClient();
+  }
+
+  private void generateOidcConfiguration() {
     if ("Keycloak".equals(idpType)) {
       oidcConfiguration = new KeycloakOidcConfiguration();
       ((KeycloakOidcConfiguration) oidcConfiguration).setRealm(realm);
@@ -149,6 +211,14 @@ public class HandlerConfiguration {
     oidcConfiguration.setUseNonce(useNonce);
     oidcConfiguration.setLogoutUrl(logoutUri);
 
+    oidcConfiguration.init();
+  }
+
+  private void generateOidcLogoutAction() {
+    logoutActionBuilder = new OidcLogoutActionBuilder(oidcConfiguration);
+  }
+
+  private void generateOidcClient() {
     if ("Keycloak".equals(idpType)) {
       oidcClient = new KeycloakOidcClient((KeycloakOidcConfiguration) oidcConfiguration);
       oidcProfileCreator = new OidcProfileCreator<KeycloakOidcProfile>(oidcConfiguration);
@@ -162,7 +232,37 @@ public class HandlerConfiguration {
       oidcClient = new OidcClient(oidcConfiguration);
       oidcProfileCreator = new OidcProfileCreator<>(oidcConfiguration);
     }
+    oidcClient.setName(oidcConfiguration.getClientId());
+    oidcClient.setCallbackUrl(callbackUrl);
 
-    logoutActionBuilder = new OidcLogoutActionBuilder(oidcConfiguration);
+    oidcClient.init();
+  }
+
+  private void generateOAuthConfiguration() {
+    oAuthConfiguration = new OAuth20Configuration();
+    oAuthConfiguration.setKey(clientId);
+    oAuthConfiguration.setSecret(secret);
+    oAuthConfiguration.setTokenAsHeader(false);
+    oAuthConfiguration.setWithState(false);
+    oAuthConfiguration.setScope(scope);
+    oAuthConfiguration.setApi(new GenericApi20(baseUri, baseUri));
+    oAuthConfiguration.setProfileDefinition(new GenericOAuth20ProfileDefinition());
+
+    oAuthConfiguration.init();
+  }
+
+  private void generateOAuthClient() {
+    oAuthClient = new OAuth20Client();
+    oAuthClient.setConfiguration(oAuthConfiguration);
+    oAuthClient.setCallbackUrl(callbackUrl);
+
+    oAuthClient.init();
+  }
+
+  public enum Flow {
+    AUTHORIZATION_CODE,
+    IMPLICIT,
+    CREDENTIAL,
+    DEFAULT
   }
 }

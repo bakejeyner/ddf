@@ -266,7 +266,6 @@
                             ddf-security-common,
                             platform-util,
                             security-core-impl,
-                            oauth2-oidc-sdk,
                             lang-tag,
                             json-smart,
                             siv-mode,

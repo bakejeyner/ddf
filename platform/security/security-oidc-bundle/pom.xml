@@ -32,6 +32,11 @@
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-oauth</artifactId>
+            <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
             <artifactId>pac4j-core</artifactId>
             <version>3.6.1</version>
         </dependency>
@@ -69,6 +74,16 @@
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-core</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-apis</artifactId>
+            <version>5.6.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -126,12 +141,16 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Embed-Dependency>
-                            pac4j-oidc,
-                            pac4j-core,
-                            oauth2-oidc-sdk,
+                            jbcrypt,
                             lang-tag,
-                            siv-mode,
-                            jbcrypt
+                            nimbus-jose-jwt,
+                            oauth2-oidc-sdk,
+                            pac4j-core,
+                            pac4j-oauth,
+                            pac4j-oidc,
+                            scribejava-apis,
+                            scribejava-core,
+                            siv-mode
                         </Embed-Dependency>
                         <Conditional-Package>org.codice.ddf.security.util</Conditional-Package>
                         <Import-Package>
@@ -139,8 +158,9 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.pac4j.core.*;version="3.6.1",
-                            org.pac4j.oidc.*;version="3.6.1"
+                            com.github.scribejava.*;version="5.6.0",
+                            com.nimbusds.*;version="${nimbus.version}",
+                            org.pac4j.*;version="3.6.1"
                         </Export-Package>
                     </instructions>
                 </configuration>

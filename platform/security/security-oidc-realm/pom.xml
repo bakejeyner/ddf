@@ -127,7 +127,6 @@
                             ddf-security-common,
                             platform-util,
                             platform-util-unavailableurls,
-                            oauth2-oidc-sdk,
                             lang-tag,
                             json-smart,
                             siv-mode,

@@ -74,7 +74,7 @@
         </property>
     </bean>
 
-    <service ref="idpHandler"             interface="org.codice.ddf.security.handler.api.AuthenticationHandler"/>
+    <service ref="idpHandler" interface="org.codice.ddf.security.handler.api.AuthenticationHandler"/>
 
     <bean id="assertionConsumerService"
           class=" org.codice.ddf.security.idp.client.AssertionConsumerService">
