@@ -47,7 +47,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.codice.ddf.platform.filter.AuthenticationException;
 import org.codice.ddf.platform.filter.AuthenticationFailureException;
 import org.codice.ddf.platform.filter.FilterChain;
 import org.codice.ddf.security.handler.api.AuthenticationHandler;
@@ -55,7 +54,6 @@ import org.codice.ddf.security.handler.api.HandlerResult;
 import org.codice.ddf.security.handler.api.HandlerResult.Status;
 import org.codice.ddf.security.handler.api.OidcAuthenticationToken;
 import org.codice.ddf.security.oidc.client.HandlerConfiguration.Flow;
-import org.codice.ddf.security.policy.context.ContextPolicy;
 import org.pac4j.core.context.J2EContext;
 import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.context.session.J2ESessionStore;
@@ -430,8 +428,7 @@ public class OidcHandler implements AuthenticationHandler {
     this.sessionFactory = sessionFactory;
   }
 
-  private void addJwtToSession(
-      HttpServletRequest httpRequest, OidcCredentials credentials) {
+  private void addJwtToSession(HttpServletRequest httpRequest, OidcCredentials credentials) {
     if (credentials == null) {
       LOGGER.debug("Cannot add null security token to session.");
       return;
