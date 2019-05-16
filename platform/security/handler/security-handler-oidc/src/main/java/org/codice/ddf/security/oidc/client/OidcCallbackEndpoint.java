@@ -36,9 +36,19 @@ public class OidcCallbackEndpoint {
   @Path("/logout")
   public Response logout(
       @Context HttpServletRequest request, @Context HttpServletResponse response) {
+    if (request == null || response == null) {
+      LOGGER.warn("Received a null request or response when logging out. Cannot process logout.");
+      return Response.serverError().build();
+    }
+
     J2ESessionStore sessionStore = new J2ESessionStore();
 
     J2EContext j2EContext = new J2EContext(request, response, sessionStore);
+
+    if (request.getSession() == null) {
+      LOGGER.warn("Received a request without a valid session. Cannot process logout.");
+      return Response.serverError().build();
+    }
 
     sessionStore.destroySession(j2EContext);
 

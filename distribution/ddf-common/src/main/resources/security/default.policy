@@ -427,9 +427,8 @@ grant codeBase "file:/platform-parser-xml" {
 grant codeBase "file:/catalog-core-localstorageprovider" {
     permission java.io.FilePermission "${ddf.home.perm}content", "write";
     permission java.io.FilePermission "${ddf.home.perm}content${/}-", "read, write";
-    permission java.io.FilePermission "${ddf.home.perm}etc${/}keysets", "read, write";
-    permission java.io.FilePermission "${ddf.home.perm}etc${/}keysets${/}-", "read, write";
-    permission java.io.FilePermission "${ddf.home.perm}etc${/}associatedData.properties", "read, write";
+    permission java.io.FilePermission "${ddf.home.perm}etc${/}keysets", "read";
+    permission java.io.FilePermission "${ddf.home.perm}etc${/}keysets${/}*", "read";
 }
 
 grant codeBase "file:/platform-country-converter-local" {

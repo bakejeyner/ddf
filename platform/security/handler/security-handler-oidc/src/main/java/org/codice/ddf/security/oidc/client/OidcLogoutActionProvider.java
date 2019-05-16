@@ -13,6 +13,7 @@
  */
 package org.codice.ddf.security.oidc.client;
 
+import com.google.common.annotations.VisibleForTesting;
 import ddf.action.Action;
 import ddf.action.ActionProvider;
 import ddf.action.impl.ActionImpl;
@@ -48,9 +49,13 @@ public class OidcLogoutActionProvider implements ActionProvider {
   private static final String DESCRIPTION =
       "Logging out of the Identity Provider(IdP) will logout all external clients signed in via that Identity Provider.";
 
-  private final HandlerConfiguration handlerConfiguration;
+  @VisibleForTesting
+  final HandlerConfiguration handlerConfiguration;
 
   public OidcLogoutActionProvider(HandlerConfiguration handlerConfiguration) {
+    if (handlerConfiguration == null) {
+      LOGGER.warn("OidcLogoutActionProvider received a null HandlerConfiguration during construction. Logout actions will not be generated until the HandlerConfiguration in this provider is updated.");
+    }
     this.handlerConfiguration = handlerConfiguration;
   }
 
@@ -62,7 +67,13 @@ public class OidcLogoutActionProvider implements ActionProvider {
    * @return OidcLogoutActionProvider containing the logout url
    */
   public <T> Action getAction(T subjectMap) {
+    if (handlerConfiguration == null) {
+      LOGGER.warn("OidcLogoutActionProvider received a null HandlerConfiguration during construction. Logout actions will not be generated until the HandlerConfiguration in this provider is updated.");
+      throw new IllegalStateException("OidcLogoutActionProvider received a null HandlerConfiguration during construction. Logout actions will not be generated until the HandlerConfiguration in this provider is updated.");
+    }
     if (!canHandle(subjectMap)) {
+      LOGGER.warn("Cannot handle passed in subject map ({}) in order to create logout action.",
+          subjectMap);
       return null;
     }
 

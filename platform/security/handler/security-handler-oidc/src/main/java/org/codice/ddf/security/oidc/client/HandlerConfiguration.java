@@ -13,6 +13,7 @@
  */
 package org.codice.ddf.security.oidc.client;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.pac4j.oauth.client.OAuth20Client;
@@ -37,17 +38,17 @@ import org.slf4j.LoggerFactory;
 public class HandlerConfiguration {
   private static final Logger LOGGER = LoggerFactory.getLogger(HandlerConfiguration.class);
 
-  private static final String IDP_TYPE = "idpType";
-  private static final String CLIENT_ID = "clientId";
-  private static final String REALM = "realm";
-  private static final String SECRET = "secret";
-  private static final String DISCOVERY_URI = "discoveryUri";
-  private static final String BASE_URI = "baseUri";
-  private static final String SCOPE = "scope";
-  private static final String USE_NONCE = "useNonce";
-  private static final String DEFAULT_RESPONSE_TYPE = "defaultResponseType";
-  private static final String RESPONSE_MODE = "responseMode";
-  private static final String LOGOUT_URI = "logoutUri";
+  @VisibleForTesting static final String IDP_TYPE = "idpType";
+  static final String CLIENT_ID = "clientId";
+  static final String REALM = "realm";
+  static final String SECRET = "secret";
+  static final String DISCOVERY_URI = "discoveryUri";
+  static final String BASE_URI = "baseUri";
+  static final String SCOPE = "scope";
+  static final String USE_NONCE = "useNonce";
+  static final String DEFAULT_RESPONSE_TYPE = "defaultResponseType";
+  static final String RESPONSE_MODE = "responseMode";
+  static final String LOGOUT_URI = "logoutUri";
 
   private OidcConfiguration oidcConfiguration;
   private OidcClient oidcClient;
@@ -60,7 +61,7 @@ public class HandlerConfiguration {
   private String responseType;
   private String callbackUrl;
 
-  private boolean initialized = false;
+  private boolean configured = false;
 
   // metatype variables
   private String idpType;
@@ -76,9 +77,7 @@ public class HandlerConfiguration {
   private String logoutUri;
 
   public HandlerConfiguration(Map<String, Object> properties) {
-    if (!properties.isEmpty()) {
-      update(properties);
-    }
+    update(properties);
   }
 
   public OidcClient getOidcClient() {
@@ -105,8 +104,8 @@ public class HandlerConfiguration {
     return oAuthConfiguration;
   }
 
-  public boolean isInitialized() {
-    return initialized;
+  public boolean isConfigured() {
+    return configured;
   }
 
   public void setCallbackUrl(String callbackUrl) {
@@ -114,7 +113,11 @@ public class HandlerConfiguration {
   }
 
   public void update(Map<String, Object> properties) {
-    initialized = true;
+    if (properties == null || properties.isEmpty()) {
+      return;
+    }
+
+    configured = true;
 
     for (Entry entry : properties.entrySet()) {
       String key = (String) entry.getKey();
@@ -143,10 +146,15 @@ public class HandlerConfiguration {
           scope = (String) value;
           break;
         case USE_NONCE:
-          useNonce = (boolean) value;
+          if (value instanceof Boolean) {
+            useNonce = (boolean) value;
+          } else if (value instanceof String) {
+            useNonce = Boolean.parseBoolean((String) value);
+          }
           break;
         case DEFAULT_RESPONSE_TYPE:
           defaultResponseType = (String) value;
+          responseType = defaultResponseType;
           break;
         case RESPONSE_MODE:
           responseMode = (String) value;
@@ -171,7 +179,7 @@ public class HandlerConfiguration {
         responseType = "code";
         break;
       case IMPLICIT:
-        responseType = "id_token token";
+        responseType = "id_token";
         break;
       case CREDENTIAL:
         responseType = "id_token token";
@@ -188,6 +196,14 @@ public class HandlerConfiguration {
 
     generateOAuthConfiguration();
     generateOAuthClient();
+  }
+
+  public void init() {
+    oidcConfiguration.init();
+    oidcClient.init();
+
+    oAuthConfiguration.init();
+    oAuthClient.init();
   }
 
   private void generateOidcConfiguration() {
@@ -210,12 +226,6 @@ public class HandlerConfiguration {
     oidcConfiguration.setResponseMode(responseMode);
     oidcConfiguration.setUseNonce(useNonce);
     oidcConfiguration.setLogoutUrl(logoutUri);
-
-    oidcConfiguration.init();
-  }
-
-  private void generateOidcLogoutAction() {
-    logoutActionBuilder = new OidcLogoutActionBuilder(oidcConfiguration);
   }
 
   private void generateOidcClient() {
@@ -234,8 +244,10 @@ public class HandlerConfiguration {
     }
     oidcClient.setName(oidcConfiguration.getClientId());
     oidcClient.setCallbackUrl(callbackUrl);
+  }
 
-    oidcClient.init();
+  private void generateOidcLogoutAction() {
+    logoutActionBuilder = new OidcLogoutActionBuilder(oidcConfiguration);
   }
 
   private void generateOAuthConfiguration() {
@@ -245,18 +257,15 @@ public class HandlerConfiguration {
     oAuthConfiguration.setTokenAsHeader(false);
     oAuthConfiguration.setWithState(false);
     oAuthConfiguration.setScope(scope);
+    oAuthConfiguration.setResponseType(responseType);
     oAuthConfiguration.setApi(new GenericApi20(baseUri, baseUri));
     oAuthConfiguration.setProfileDefinition(new GenericOAuth20ProfileDefinition());
-
-    oAuthConfiguration.init();
   }
 
   private void generateOAuthClient() {
     oAuthClient = new OAuth20Client();
     oAuthClient.setConfiguration(oAuthConfiguration);
     oAuthClient.setCallbackUrl(callbackUrl);
-
-    oAuthClient.init();
   }
 
   public enum Flow {

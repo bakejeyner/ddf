@@ -20,8 +20,11 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.oauth.config.OAuth20Configuration;
 import org.pac4j.oauth.credentials.OAuth20Credentials;
 import org.pac4j.oauth.credentials.extractor.OAuth20CredentialsExtractor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomOAuthCredentialsExtractor extends OAuth20CredentialsExtractor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HandlerConfiguration.class);
 
   public CustomOAuthCredentialsExtractor(
       final OAuth20Configuration configuration, final IndirectClient client) {
@@ -30,13 +33,18 @@ public class CustomOAuthCredentialsExtractor extends OAuth20CredentialsExtractor
 
   @Override
   protected OAuth20Credentials getOAuthCredentials(final WebContext context) {
+    if (context == null) {
+      LOGGER.warn("Cannot extract credentials from null web context.");
+      return new OAuth20Credentials(null);
+    }
+
     OAuth20Credentials credentials;
 
     final String codeParam = context.getRequestParameter(OAuth20Configuration.OAUTH_CODE);
     if (codeParam != null) {
       credentials = new OAuth20Credentials(OAuthEncoder.decode(codeParam));
     } else {
-      logger.debug("No OAuth2 code found on request.");
+      LOGGER.debug("No OAuth2 code found on request.");
       credentials = new OAuth20Credentials(null);
     }
 
@@ -46,7 +54,7 @@ public class CustomOAuthCredentialsExtractor extends OAuth20CredentialsExtractor
     if (accessToken != null) {
       credentials.setAccessToken(new OAuth2AccessToken(OAuthEncoder.decode(accessToken)));
     } else {
-      logger.debug("No OAuth2 access token found on request.");
+      LOGGER.debug("No OAuth2 access token found on request.");
     }
 
     return credentials;

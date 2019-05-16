@@ -74,9 +74,9 @@ public class OidcHandler implements AuthenticationHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OidcHandler.class);
 
-  public static final String SOURCE = "OidcHandler";
+  private static final String SOURCE = "OidcHandler";
 
-  public static final String AUTH_TYPE = "OIDC";
+  private static final String AUTH_TYPE = "OIDC";
 
   private HandlerConfiguration handlerConfiguration;
 
@@ -88,6 +88,10 @@ public class OidcHandler implements AuthenticationHandler {
 
   public void buildConfiguration(HandlerConfiguration handlerConfiguration) {
     this.handlerConfiguration = handlerConfiguration;
+  }
+
+  public HandlerConfiguration getConfiguration() {
+    return handlerConfiguration;
   }
 
   @Override
@@ -129,10 +133,10 @@ public class OidcHandler implements AuthenticationHandler {
     }
 
     // at this point, the OIDC Handler must be configured
-    if (!handlerConfiguration.isInitialized()) {
+    if (handlerConfiguration == null || !handlerConfiguration.isConfigured()) {
       LOGGER.error(
-          "The OIDC Handler's configuration has not been initialized. "
-              + "Configure \"OIDC Handler Configuration\" in the admin console to initialize.");
+          "The OIDC Handler has not yet been configured. "
+              + "Configure \"OIDC Handler Configuration\" in the admin console.");
       HandlerResult handlerResult = new HandlerResult();
       handlerResult.setSource("oidc-" + SOURCE);
       handlerResult.setStatus(Status.NO_ACTION);
@@ -203,7 +207,7 @@ public class OidcHandler implements AuthenticationHandler {
 
     // if the request has credentials, process it
     if (credentials.getIdToken() != null) {
-      LOGGER.info("ID Token found on request. Saving to session and continuing filter chain.");
+      LOGGER.info("ID Token found on request. Saving to session.");
       return addCredentialsToSession(credentials, httpRequest, response, j2EContext, requestUrl);
     } else if (!isMachine) { // the request didn't have credentials, go get some
       LOGGER.info(
@@ -265,7 +269,7 @@ public class OidcHandler implements AuthenticationHandler {
               .hashString(httpRequest.getRequestedSessionId(), StandardCharsets.UTF_8)
               .toString());
     }
-    if (session == null && httpRequest.getRequestedSessionId() != null) {
+    if (session == null && httpRequest.getRequestedSessionId() != null && sessionFactory != null) {
       session = sessionFactory.getOrCreateSession(httpRequest);
     }
 
@@ -301,6 +305,7 @@ public class OidcHandler implements AuthenticationHandler {
 
     handlerConfiguration.configureFlow(Flow.CREDENTIAL);
     handlerConfiguration.generate();
+    handlerConfiguration.init();
 
     OAuth20CredentialsExtractor credentialsExtractor =
         new CustomOAuthCredentialsExtractor(
@@ -335,6 +340,7 @@ public class OidcHandler implements AuthenticationHandler {
     handlerConfiguration
         .getOidcClient()
         .setCallbackUrlResolver(new QueryParameterCallbackUrlResolver());
+    handlerConfiguration.init();
 
     OidcExtractor oidcExtractor =
         new OidcExtractor(
