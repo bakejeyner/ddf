@@ -831,10 +831,10 @@ public class TestOidc extends AbstractIntegrationTest {
   @Test
   public void testCredentialFlow() throws Exception {
     String accessToken = createAccessToken(true);
-    String userInfo = createUserInfoJson(true, false);
+    String userInfo = createUserInfo(true, false);
 
     Response response =
-        processCredentialFlow(accessToken, userInfo, HttpStatus.SC_MOVED_TEMPORARILY, true);
+        processCredentialFlow(accessToken, userInfo, false, HttpStatus.SC_MOVED_TEMPORARILY, true);
 
     assertThat(response.header(LOCATION), is(SEARCH_URL.getUrl()));
 
@@ -848,10 +848,11 @@ public class TestOidc extends AbstractIntegrationTest {
   @Test
   public void testSignedUserInfoResponseCredentialFlow() throws Exception {
     String accessToken = createAccessToken(true);
-    String signedUserInfo = createUserInfoJson(true, true);
+    String signedUserInfo = createUserInfo(true, true);
 
     Response response =
-        processCredentialFlow(accessToken, signedUserInfo, HttpStatus.SC_MOVED_TEMPORARILY, true);
+        processCredentialFlow(
+            accessToken, signedUserInfo, true, HttpStatus.SC_MOVED_TEMPORARILY, true);
 
     assertThat(response.header(LOCATION), is(SEARCH_URL.getUrl()));
 
@@ -865,10 +866,11 @@ public class TestOidc extends AbstractIntegrationTest {
   @Test
   public void testInvalidUserInfoSignatureCredentialFlow() throws Exception {
     String accessToken = createAccessToken(true);
-    String invalidSigUserInfo = createUserInfoJson(false, true);
+    String invalidSigUserInfo = createUserInfo(false, true);
 
     Response response =
-        processCredentialFlow(accessToken, invalidSigUserInfo, HttpStatus.SC_BAD_REQUEST, true);
+        processCredentialFlow(
+            accessToken, invalidSigUserInfo, true, HttpStatus.SC_BAD_REQUEST, true);
 
     // Verify that we're logged in as admin
     Map<String, Object> userInfoList = getUserInfo(response.cookies().get(JSESSIONID));
@@ -878,10 +880,11 @@ public class TestOidc extends AbstractIntegrationTest {
   @Test
   public void testInvalidAccessTokenCredentialFlow() throws Exception {
     String invalidAccessToken = createAccessToken(false);
-    String userInfo = createUserInfoJson(true, false);
+    String userInfo = createUserInfo(true, false);
 
     Response response =
-        processCredentialFlow(invalidAccessToken, userInfo, HttpStatus.SC_BAD_REQUEST, false);
+        processCredentialFlow(
+            invalidAccessToken, userInfo, false, HttpStatus.SC_BAD_REQUEST, false);
 
     // Verify that we're logged in as admin
     Map<String, Object> userInfoList = getUserInfo(response.cookies().get(JSESSIONID));
@@ -904,14 +907,16 @@ public class TestOidc extends AbstractIntegrationTest {
   private Response processCredentialFlow(
       String accessToken,
       String userInfoResponse,
+      boolean signed,
       int expectedStatusCode,
       boolean userInfoShouldBeHit) {
 
     // Host the user info endpoint with the access token in the auth header
     String basicAuthHeader = "Bearer " + accessToken;
+    String contentType = signed ? "application/jwt" : APPLICATION_JSON;
     whenHttp(server)
         .match(get(USER_INFO_ENDPOINT_PATH), withHeader(AUTHORIZATION, basicAuthHeader))
-        .then(ok(), contentType(APPLICATION_JSON), bytesContent(userInfoResponse.getBytes()));
+        .then(ok(), contentType(contentType), bytesContent(userInfoResponse.getBytes()));
 
     // Send a request to DDF with the access token
     Response response =
@@ -1129,12 +1134,12 @@ public class TestOidc extends AbstractIntegrationTest {
   }
 
   /**
-   * Creates and returns a user info JSON
+   * Creates and returns a user info
    *
    * @param valid - whether it should be valid or not
    * @param signed - whether it should be signed or not
    */
-  private String createUserInfoJson(boolean valid, boolean signed) throws Exception {
+  private String createUserInfo(boolean valid, boolean signed) throws Exception {
     String[] roles = {"create-realm", "offline_access", "admin", "uma_authorization"};
 
     if (!signed) {
